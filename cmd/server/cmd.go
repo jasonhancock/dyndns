@@ -9,6 +9,8 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/route53"
 	"github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/graymeta/env"
@@ -17,7 +19,6 @@ import (
 	phttp "github.com/jasonhancock/dyndns/http"
 	"github.com/jasonhancock/dyndns/version"
 	"github.com/jmoiron/sqlx"
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -30,7 +31,7 @@ func NewCmd(wg *sync.WaitGroup, info version.Info) *cobra.Command {
 		httpAddr string
 		allowed  string
 		logConf  *cl.Config
-		dbConf   *DBConfig
+		//dbConf   *DBConfig
 	)
 
 	cmd := &cobra.Command{
@@ -44,10 +45,18 @@ func NewCmd(wg *sync.WaitGroup, info version.Info) *cobra.Command {
 			ctx, cancel := context.WithCancel(cmd.Context())
 			defer cancel()
 
-			db, err := dbConf.Connect()
+			// construct AWS Route53 client
+			c, err := config.LoadDefaultConfig(ctx, config.WithRegion("us-west-2"))
 			if err != nil {
-				return errors.Wrap(err, "connecting to database")
+				return err
 			}
+
+			/*
+				db, err := dbConf.Connect()
+				if err != nil {
+					return errors.Wrap(err, "connecting to database")
+				}
+			*/
 
 			routerHTTP := mux.NewRouter()
 			v1HTTP := mux.NewRouter()
@@ -55,7 +64,8 @@ func NewCmd(wg *sync.WaitGroup, info version.Info) *cobra.Command {
 
 			{
 				var svc dns.SVC
-				svc = dns.NewService(strings.Split(strings.TrimSpace(allowed), ","), db)
+				svc = dns.NewServiceRoute53(route53.NewFromConfig(c))
+				svc = dns.NewAuthRecordService(svc, strings.Split(strings.TrimSpace(allowed), ","))
 				svc = dns.NewLoggingService(svc, l.New("dns"))
 				dns.NewHTTPServer(v1HTTP, svc)
 			}
@@ -76,7 +86,7 @@ func NewCmd(wg *sync.WaitGroup, info version.Info) *cobra.Command {
 	}
 
 	logConf = cl.NewConfig(cmd)
-	dbConf = NewDBConfig(cmd)
+	//dbConf = NewDBConfig(cmd)
 
 	cmd.Flags().StringVar(
 		&httpAddr,

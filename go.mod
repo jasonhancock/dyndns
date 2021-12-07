@@ -3,6 +3,9 @@ module github.com/jasonhancock/dyndns
 go 1.16
 
 require (
+	github.com/aws/aws-sdk-go-v2 v1.11.2 // indirect
+	github.com/aws/aws-sdk-go-v2/config v1.11.0 // indirect
+	github.com/aws/aws-sdk-go-v2/service/route53 v1.14.2 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/graymeta/env v0.0.2

@@ -20,8 +20,7 @@ func NewLoggingService(svc SVC, l *logger.L) *LoggingService {
 	}
 }
 
-// Failover logs information about the failover event before passing it to the
-// next service in the middleware chain.
+// DNS logs info about the request when errors occur.
 func (s *LoggingService) DNS(ctx context.Context, req Request) error {
 	err := s.svc.DNS(ctx, req)
 	if err != nil {
