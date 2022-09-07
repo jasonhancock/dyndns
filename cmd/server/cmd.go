@@ -13,11 +13,11 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/route53"
 	"github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
-	"github.com/graymeta/env"
 	cl "github.com/jasonhancock/cobra-logger"
 	"github.com/jasonhancock/dyndns/dns"
 	phttp "github.com/jasonhancock/dyndns/http"
 	"github.com/jasonhancock/dyndns/version"
+	"github.com/jasonhancock/go-env"
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
 )
@@ -91,7 +91,7 @@ func NewCmd(wg *sync.WaitGroup, info version.Info) *cobra.Command {
 	cmd.Flags().StringVar(
 		&httpAddr,
 		"http-addr",
-		env.GetenvWithDefault("ADDR", defaultServerHTTPAddr),
+		env.String("ADDR", defaultServerHTTPAddr),
 		"Interface:port to bind the HTTP interface to.",
 	)
 
@@ -119,14 +119,14 @@ func NewDBConfig(cmd *cobra.Command) *DBConfig {
 	cmd.Flags().StringVar(
 		&c.Host,
 		"db-host",
-		env.GetenvWithDefault("DB_HOST", "127.0.0.1"),
+		env.String("DB_HOST", "127.0.0.1"),
 		"Database host",
 	)
 
 	cmd.Flags().IntVar(
 		&c.Port,
 		"db-port",
-		env.GetenvIntWithDefault("DB_PORT", 3306),
+		env.Int("DB_PORT", 3306),
 		"Database port",
 	)
 
