@@ -8,8 +8,8 @@ import (
 	"sync"
 	"syscall"
 
+	ver "github.com/jasonhancock/cobra-version"
 	"github.com/jasonhancock/dyndns/cmd"
-	ver "github.com/jasonhancock/dyndns/version"
 )
 
 // These variables are populated by goreleaser when the binary is built.

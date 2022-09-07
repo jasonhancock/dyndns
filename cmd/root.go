@@ -5,9 +5,9 @@ import (
 	"os"
 	"sync"
 
+	version "github.com/jasonhancock/cobra-version"
 	"github.com/jasonhancock/dyndns/cmd/server"
 	"github.com/jasonhancock/dyndns/cmd/update"
-	"github.com/jasonhancock/dyndns/version"
 	"github.com/spf13/cobra"
 )
 
@@ -29,7 +29,7 @@ func newRootCmd(wg *sync.WaitGroup, info version.Info) *cobra.Command {
 	cmd.AddCommand(
 		server.NewCmd(wg, info),
 		update.NewCmd(),
-		newVersionCmd(info),
+		version.NewCmd(info),
 	)
 
 	return cmd
